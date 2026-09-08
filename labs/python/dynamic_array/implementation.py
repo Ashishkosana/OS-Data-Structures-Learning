@@ -25,9 +25,9 @@ class DynamicArray:
         Args:
             initial_capacity: Starting capacity (default 1).
         """
-        # TODO: Initialize self.size, self.capacity, and self.data
-        # self.data should be a list of None with initial_capacity slots
-        pass
+        self.size = 0
+        self.capacity = initial_capacity
+        self.data = [None] * initial_capacity
     
     def append(self, elem):
         """Add an element to the end of the array.
@@ -38,10 +38,21 @@ class DynamicArray:
         Args:
             elem: Element to add.
         """
-        # TODO: If self.size == self.capacity, double capacity and realloc
-        # Then add elem at self.data[self.size]
-        # Increment self.size
-        pass
+        # Check if we need to reallocate
+        if self.size == self.capacity:
+            new_capacity = max(1, self.capacity * 2)
+            new_data = [None] * new_capacity
+            
+            # Copy old elements to new buffer
+            for i in range(self.size):
+                new_data[i] = self.data[i]
+            
+            self.data = new_data
+            self.capacity = new_capacity
+        
+        # Add element at the end
+        self.data[self.size] = elem
+        self.size += 1
     
     def pop(self):
         """Remove and return the last element.
@@ -54,8 +65,11 @@ class DynamicArray:
         Raises:
             IndexError if the array is empty.
         """
-        # TODO: Check if size > 0, return self.data[size-1], decrement size
-        pass
+        if self.size == 0:
+            raise IndexError("pop from empty array")
+        
+        self.size -= 1
+        return self.data[self.size]
     
     def __getitem__(self, index):
         """Get element at index.
@@ -71,8 +85,9 @@ class DynamicArray:
         Raises:
             IndexError if index out of range [0, size).
         """
-        # TODO: Check bounds, return self.data[index]
-        pass
+        if index < 0 or index >= self.size:
+            raise IndexError("Index out of range")
+        return self.data[index]
     
     def __setitem__(self, index, elem):
         """Set element at index.
@@ -86,8 +101,9 @@ class DynamicArray:
         Raises:
             IndexError if index out of range [0, size).
         """
-        # TODO: Check bounds, set self.data[index] = elem
-        pass
+        if index < 0 or index >= self.size:
+            raise IndexError("Index out of range")
+        self.data[index] = elem
     
     def __len__(self):
         """Return the current size.
@@ -112,9 +128,19 @@ class DynamicArray:
         Args:
             new_capacity: Desired capacity.
         """
-        # TODO: If new_capacity != capacity, allocate new buffer,
-        # copy elements, update self.data and self.capacity
-        pass
+        if new_capacity == self.capacity:
+            return
+        
+        new_data = [None] * new_capacity
+        
+        # Copy elements (up to the minimum of old size and new capacity)
+        copy_size = min(self.size, new_capacity)
+        for i in range(copy_size):
+            new_data[i] = self.data[i]
+        
+        self.data = new_data
+        self.capacity = new_capacity
+        self.size = min(self.size, new_capacity)
     
     def __repr__(self):
         """String representation for debugging."""
